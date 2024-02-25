@@ -1,6 +1,6 @@
 const express = require("express");
 const ctrlWrapper = require("../helpers");
-const { validateBody, isValidId, authenticate } = require("../midlevares");
+const { validateBody, isValidId, auth } = require("../midlewares");
 
 const {
   createContactSchema,
@@ -19,32 +19,32 @@ const {
 
 const contactsRouter = express.Router();
 
-contactsRouter.get("/", authenticate, ctrlWrapper(getAllContacts));
+contactsRouter.get("/", auth, ctrlWrapper(getAllContacts));
 
 contactsRouter.get(
   "/:id",
-  authenticate,
+  auth,
   isValidId,
   ctrlWrapper(getContactById)
 );
 
 contactsRouter.delete(
   "/:id",
-  authenticate,
+  auth,
   isValidId,
   ctrlWrapper(deleteContact)
 );
 
 contactsRouter.post(
   "/",
-  authenticate,
+  auth,
   validateBody(createContactSchema),
   ctrlWrapper(createContact)
 );
 
 contactsRouter.put(
   "/:id",
-  authenticate,
+  auth,
   validateBody(updateContactSchema),
   isValidId,
   ctrlWrapper(updateContactById)
@@ -52,7 +52,7 @@ contactsRouter.put(
 
 contactsRouter.patch(
   "/:id/favorite",
-  authenticate,
+  auth,
   validateBody(updateFavoriteSchema),
   isValidId,
   ctrlWrapper(updateStatusContact)

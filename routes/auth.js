@@ -1,5 +1,5 @@
 const express = require("express");
-const { validateBody, authenticate, upload } = require("../midlevares");
+const { validateBody, auth, upload } = require("../midlevares");
 const ctrlWrapper = require("../helpers");
 const {
   register,
@@ -7,22 +7,36 @@ const {
   logout,
   getCurrent,
   updateAvatar,
+  verifyEmail,
+  resendVerifyEmail,
 } = require("../controllers/auth");
-const { registerSchema, loginSchema } = require("../schemas");
+const { registerSchema, loginSchema, verifySchema } = require("../schemas");
 
 const router = express.Router();
 
-router.post("/register", validateBody(registerSchema), ctrlWrapper(register));
+router.post(
+  "/register",
+  validateBody(registerSchema),
+  ctrlWrapper(register)
+);
+
+router.get("/verify/:verificationToken", ctrlWrapper(verifyEmail));
+
+router.post(
+  "/verify",
+  validateBody(verifySchema),
+  ctrlWrapper(resendVerifyEmail)
+);
 
 router.post("/login", validateBody(loginSchema), ctrlWrapper(login));
 
-router.get("/current", authenticate, ctrlWrapper(getCurrent));
+router.get("/current", auth, ctrlWrapper(getCurrent));
 
-router.post("/logout", authenticate, ctrlWrapper(logout));
+router.post("/logout", auth, ctrlWrapper(logout));
 
 router.patch(
   "/avatars",
-  authenticate,
+  auth,
   upload.single("avatar"),
   ctrlWrapper(updateAvatar)
 );
